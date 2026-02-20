@@ -1,0 +1,63 @@
+
+select 
+year (order_date) order_year,		--year function extracts the year from a date
+sum (sales_amount) total_sales,
+count(distinct customer_key) as total_customers	,
+sum(quantity) total_quantity
+from gold.fact_sales
+
+where order_date is not null
+group by year (order_date)
+order by year (order_date)
+
+
+---same calculation by month
+select 
+month (order_date) order_month,		--month function extracts the month from a date
+sum (sales_amount) total_sales,
+count(distinct customer_key) as total_customers	,
+sum(quantity) total_quantity
+from gold.fact_sales
+
+where order_date is not null
+group by month (order_date)
+order by month (order_date)
+
+--same calculation from year and month
+
+select 
+
+year (order_date) order_year,
+month (order_date) order_month,		--month function extracts the month from a date
+sum (sales_amount) total_sales,
+count(distinct customer_key) as total_customers	,
+sum(quantity) total_quantity
+from gold.fact_sales
+
+where order_date is not null
+group by year (order_date) , MONTH (order_date)
+order by year (order_date) , month (order_date)
+
+--date trunc function joins/ filters the dates together
+select 
+DATETRUNC (month, order_date) as order_date,		--can be changed to month
+sum (sales_amount) total_sales,
+count(distinct customer_key) as total_customers	,
+sum(quantity) total_quantity
+from gold.fact_sales
+
+where order_date is not null
+group by  DATETRUNC (month, order_date)
+order by  DATETRUNC (month, order_date)
+
+--date format option
+select 
+format (order_date,'yyyy-MMM') as order_date,		-- must provide column name and new format
+sum (sales_amount) total_sales,
+count(distinct customer_key) as total_customers	,
+sum(quantity) total_quantity
+from gold.fact_sales
+
+where order_date is not null
+group by  format (order_date,'yyyy-MMM')		--this format cannot be sorted by the month, only the year as this is a string
+order by  format (order_date,'yyyy-MMM')
