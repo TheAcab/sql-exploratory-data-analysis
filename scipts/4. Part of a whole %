@@ -1,0 +1,26 @@
+use DataWarehouse
+
+--which cetegories contribute the most to the overall sales?
+with category_sales as(
+select 
+category,
+sum (sales_amount) total_sales
+from gold.fact_sales f
+
+left join	gold.dim_products p
+on p.PRODUCT_key = f.product_key
+
+group by category)
+
+select
+category,
+total_sales,
+
+sum(total_sales) over () overallsales, 
+concat															--concat function combines text (in this case the '%' character)
+( round((cast(total_sales as float)/				 --round function rounds to selected value (2 decimal points)
+sum (total_sales) over ()) *100,2) , '%')
+as percentage_of_total								 --cast canges data type, float converts to floating number/ decimal point
+
+from category_sales
+order by total_sales desc
