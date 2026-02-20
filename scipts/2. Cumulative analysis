@@ -1,0 +1,60 @@
+--calculate the total sales per month and the running total of sales over time
+
+select
+order_date,
+sales_amount
+from gold.fact_sales
+
+select																																									--6.
+order_date,																																						--7.
+total_sales,																																							--8.
+sum(total_sales) over (order by order_date) as running_total_sales --creates a column that add the previous sales to the current sales
+from (																																									--9.
+select																																									--1.
+datetrunc (month, order_date) order_date,		--this function truncates/ filters the sales per month		--2.
+sum (sales_amount) as total_sales																													--3.
+from gold.fact_sales																																			--4.
+
+where order_date is not null																															--5.
+group by datetrunc (month, order_date)
+)t																																											--9.1
+
+
+select 43419 + 469795
+
+---to reset the values by year...
+
+select																																									--6.
+order_date,																																						--7.
+total_sales,																																							--8.
+sum(total_sales) 
+over (partition by order_date order by order_date) as running_total_sales --creates a column that add the previous sales to the current sales
+from 
+(																																											--9.
+select																																									--1.
+datetrunc (month, order_date) order_date,		--this function truncates/ filters the sales per month		--2.
+sum (sales_amount) as total_sales																													--3.
+from gold.fact_sales																																			--4.
+
+where order_date is not null																															--5.
+group by datetrunc (month, order_date)
+)t				
+
+--running totals over the years, with moving avg--------------------------------------------------------------------------------------------------------
+select																																									--6.
+order_date,																																						--7.
+total_sales,																																							--8.
+sum(total_sales) over (  order by order_date) as running_total_sales, --creates a column that add the previous sales to the current sales
+avg (avgprice) over (  order by order_date) as moving_average
+from 
+(																																											--9.
+select																																									--1.
+datetrunc (YEAR, order_date) order_date,		--this function truncates/ filters the sales per month		--2.
+sum (sales_amount) as total_sales,
+AVG(price) as avgprice																																	--3.
+from gold.fact_sales																																			--4.
+
+where order_date is not null																															--5.
+group by datetrunc (YEAR, order_date)
+)t				
+
